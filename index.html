@@ -19,22 +19,37 @@
 				<button class="btn btn-sm btn-success mb-2" @click="addItemModal">Add New Contact</button>
 
 				<div class="modal fade" id="addNewModal" tabindex="-1" aria-labelledby="addNewModal" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-				  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				  <div class="modal-dialog modal-dialog-centered">
 				    <div class="modal-content">
 				      <div class="modal-header">
 				        <h5 class="modal-title" id="addNewModal">New Contact</h5>
 				        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				      </div>
 				      	<div class="modal-body">
-				        	<div class="mb-3">
-			        	    	<label class="form-label">Email address</label>
-				        	    <input type="text" class="form-control">
-			        	  	</div>
+				        	<form action="" method="post" autocomplete="off">
+        			        	<div class="mb-3">
+        		        	    	<label class="form-label">Name</label>
+        			        	    <input type="text" class="form-control" v-model="name" id="name" value="sadasdas">
+        		        	  	</div>
+        		        	  	<div class="mb-3">
+        		        	    	<label class="form-label">Phone</label>
+        			        	    <input type="text" class="form-control" v-model="phone" id="phone">
+        		        	  	</div>
+        		        	  	<div class="mb-3">
+        		        	    	<label class="form-label">Company</label>
+        			        	    <input type="text" class="form-control" v-model="company" id="company">
+        		        	  	</div>
+        		        	  	<div class="mb-3">
+        		        	    	<label class="form-label">Address</label>
+        			        	    <textarea v-model="address" id="address" cols="30" rows="5" class="form-control"></textarea>
+        		        	  	</div>
+
+        		        	  	<div class="modal-footer">
+        		        	  	  	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        		        	  	  	<button type="button" class="btn btn-primary">Save changes</button>
+        		        	  	</div>
+				        	</form>
 				      	</div>
-				      <div class="modal-footer">
-				        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				        <button type="button" class="btn btn-primary">Save changes</button>
-				      </div>
 				    </div>
 				  </div>
 				</div>
@@ -76,16 +91,40 @@
 		<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 
 		<script>
+			var contactList = localStorage.getItem("contactList");
+			contactList = JSON.parse(contactList);
+			if(contactList == null){
+				contactList = [];
+			}
+
 			var app = new Vue({
 			  el: '#app',
 			  data: {
+			  	name: '',
+			  	phone: '',
+			  	company: '',
+			  	address: '',
+			  	contactList: []
 			  },
 			  mounted: function(){
-			  	this.addItemModal();
+			  	// this.addItemModal();
 			  },
 			  methods:{
 			  	addItemModal(){
 			  		new bootstrap.Modal(document.getElementById('addNewModal')).show();
+			  	},
+			  	save_item(){
+			  		var contact = JSON.stringify
+			  		({ 
+			  			name : this.name, 
+			  			phone : this.phone, 
+			  			company : this.company, 
+			  			address : this.address, 
+			  		});
+			  		this.contactList.push(contact); 
+			  		localStorage.setItem("contactList", JSON.stringify(this.contactList));
+			  		alert("The data was saved.");
+		  			return true;
 			  	}
 			  }
 			})
