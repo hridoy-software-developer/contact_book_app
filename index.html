@@ -22,31 +22,32 @@
 				  <div class="modal-dialog modal-dialog-centered">
 				    <div class="modal-content">
 				      <div class="modal-header">
-				        <h5 class="modal-title" id="addNewModal">New Contact</h5>
+				        <h5 class="modal-title" id="addNewModal">{{title}}</h5>
 				        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				      </div>
 				      	<div class="modal-body">
-				        	<form action="" method="post" autocomplete="off">
+				        	<form action="" method="post" autocomplete="off" @submit.prevent="save_item(this)">
+        			        	<div class="alert alert-success mb-3" role="alert" v-if="msg.length != 0">{{msg}}</div>
         			        	<div class="mb-3">
         		        	    	<label class="form-label">Name</label>
-        			        	    <input type="text" class="form-control" v-model="name" id="name" value="sadasdas">
+        			        	    <input type="text" class="form-control" v-model="name" id="name" required>
         		        	  	</div>
         		        	  	<div class="mb-3">
         		        	    	<label class="form-label">Phone</label>
-        			        	    <input type="text" class="form-control" v-model="phone" id="phone">
+        			        	    <input type="text" class="form-control" v-model="phone" id="phone" required>
         		        	  	</div>
         		        	  	<div class="mb-3">
         		        	    	<label class="form-label">Company</label>
-        			        	    <input type="text" class="form-control" v-model="company" id="company">
+        			        	    <input type="text" class="form-control" v-model="company" id="company" required>
         		        	  	</div>
         		        	  	<div class="mb-3">
         		        	    	<label class="form-label">Address</label>
-        			        	    <textarea v-model="address" id="address" cols="30" rows="5" class="form-control"></textarea>
+        			        	    <textarea v-model="address" id="address" cols="30" rows="5" class="form-control" required></textarea>
         		        	  	</div>
 
         		        	  	<div class="modal-footer">
         		        	  	  	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        		        	  	  	<button type="button" class="btn btn-primary">Save changes</button>
+        		        	  	  	<button type="submit" class="btn btn-primary">Save changes</button>
         		        	  	</div>
 				        	</form>
 				      	</div>
@@ -70,7 +71,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
+					<tr v-for="item in contactList">
 						<td>1</td>
 						<td>Shaikot</td>
 						<td>01734476075</td>
@@ -87,19 +88,19 @@
 			</table>
 		</div>
 
+		<script type="text/javascript" src="http://code.jQuery.com/jQuery-1.7.2.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 
 		<script>
-			var contactList = localStorage.getItem("contactList");
-			contactList = JSON.parse(contactList);
-			if(contactList == null){
-				contactList = [];
-			}
+
+			var contacts = [];
 
 			var app = new Vue({
 			  el: '#app',
 			  data: {
+			  	title: '',
+			  	msg: '',
 			  	name: '',
 			  	phone: '',
 			  	company: '',
@@ -108,23 +109,49 @@
 			  },
 			  mounted: function(){
 			  	// this.addItemModal();
+			  	this.showItem();
 			  },
 			  methods:{
+			  	showItem(){
+			  		if (!!(localStorage.getItem('contactList'))) {
+		  		      this.contactList = JSON.parse(localStorage.getItem('contactList'));
+		  		    } else {
+		  		      this.contactList = [];
+		  		    }
+		  		    console.log(this.contactList);
+			  	},
+			  	clearForm(){
+			  		this.msg = '';
+			  		this.name = '';
+			  		this.phone = '';
+			  		this.company = '';
+			  		this.address = '';
+			  	},
+			  	getNewDate(){
+			  		var d = new Date();
+			  		var newDate = ("0" + d.getDate()).slice(-2) + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" +
+			  		    d.getFullYear();
+			  		return newDate;    
+			  	},
 			  	addItemModal(){
+			  		this.title = "New contact";
 			  		new bootstrap.Modal(document.getElementById('addNewModal')).show();
 			  	},
-			  	save_item(){
+			  	save_item(obj){
 			  		var contact = JSON.stringify
 			  		({ 
 			  			name : this.name, 
 			  			phone : this.phone, 
 			  			company : this.company, 
-			  			address : this.address, 
+			  			address : this.address,
+			  			create_on: this.getNewDate()
 			  		});
-			  		this.contactList.push(contact); 
-			  		localStorage.setItem("contactList", JSON.stringify(this.contactList));
-			  		alert("The data was saved.");
-		  			return true;
+			  		contacts.push(contact); 
+			  		localStorage.setItem("contactList", JSON.stringify(contacts));
+			  		this.msg = "The data was saved successfully";
+			  		this.showItem();
+			  		setTimeout(()=>{ this.clearForm(); }, 1500);	
+		  			return false;
 			  	}
 			  }
 			})
