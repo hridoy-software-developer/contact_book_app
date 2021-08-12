@@ -71,17 +71,17 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="item in contactList">
-						<td>1</td>
-						<td>Shaikot</td>
-						<td>01734476075</td>
-						<td>Daffodil</td>
-						<td>Comilla</td>
-						<td>12 jun,2020</td>
-						<td>16 Apr,2021</td>
+					<tr v-for="(item,key) in contactList">
+						<td>{{key+1}}</td>
+						<td>{{item.name}}</td>
+						<td>{{item.phone}}</td>
+						<td>{{item.company}}</td>
+						<td>{{item.address}}</td>
+						<td>{{item.created_on}}</td>
+						<td>{{item.updated_on}}</td>
 						<td>
 							<button class="btn btn-sm btn-warning">Edit</button>
-							<button class="btn btn-sm btn-danger">Delete</button>
+							<button class="btn btn-sm btn-danger" @click="deleteItem(key)">Delete</button>
 						</td>
 					</tr>
 				</tbody>
@@ -108,7 +108,6 @@
 			  	contactList: []
 			  },
 			  mounted: function(){
-			  	// this.addItemModal();
 			  	this.showItem();
 			  },
 			  methods:{
@@ -127,6 +126,19 @@
 			  		this.company = '';
 			  		this.address = '';
 			  	},
+			  	randomString(){
+			  		var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
+
+		  		    if (! length) {
+		  		        length = Math.floor(Math.random() * chars.length);
+		  		    }
+
+		  		    var str = '';
+		  		    for (var i = 0; i < length; i++) {
+		  		        str += chars[Math.floor(Math.random() * chars.length)];
+		  		    }
+		  		    return str;
+			  	},
 			  	getNewDate(){
 			  		var d = new Date();
 			  		var newDate = ("0" + d.getDate()).slice(-2) + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" +
@@ -138,20 +150,29 @@
 			  		new bootstrap.Modal(document.getElementById('addNewModal')).show();
 			  	},
 			  	save_item(obj){
-			  		var contact = JSON.stringify
-			  		({ 
+			  		var contact =
+			  		{ 
+			  			id : this.randomString(), 
 			  			name : this.name, 
 			  			phone : this.phone, 
 			  			company : this.company, 
 			  			address : this.address,
-			  			create_on: this.getNewDate()
-			  		});
+			  			created_on: this.getNewDate(),
+			  			updated_on: this.getNewDate()
+			  		};
 			  		contacts.push(contact); 
 			  		localStorage.setItem("contactList", JSON.stringify(contacts));
 			  		this.msg = "The data was saved successfully";
 			  		this.showItem();
-			  		setTimeout(()=>{ this.clearForm(); }, 1500);	
+			  		setTimeout(()=>{ this.clearForm(); }, 1000);	
 		  			return false;
+			  	},
+			  	deleteItem(index){
+			  		if (confirm('Are you sure you want to delete this information?')){
+			  			contacts.splice(index, 1);
+			  			localStorage.setItem("contactList", JSON.stringify(contacts));
+			  			this.showItem();
+			  		}
 			  	}
 			  }
 			})
